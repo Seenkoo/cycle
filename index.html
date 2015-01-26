@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>ИСТ</title>
+	<link rel="stylesheet" href="css/style.css">
+	<script src="js/jquery-1.11.2.min.js"></script>
+	<script src="js/script.js"></script>
+</head>
+<body>
+	<br>
+	<label>
+		<i>Порождающий многочлен <b>g(x)</b>:</i>
+		<input type="text" id="generator" value="x5+x2+1">
+	</label>
+	<br>
+	<br>
+	<label>
+		<i><b>n</b> = </i><input type="number" name="n" id="n" value="31">
+	</label>
+	<br>
+	<br>
+	<label>
+		<i><b>k</b> = </i><input type="number" name="k" id="k" value="26">
+	</label>
+	<br>
+	<br>
+	<label>
+		<i>Кодируемое слово <b>a</b> (длины k):</i>
+		<input type="text" id="a" value="01001001101000100110010010" size="64">
+	</label>
+	<br>
+	<br>
+	<button id="calc">Рассчитать</button>
+	<br>
+	<br>
+	<div id="result">
+		<div id="input" class="empty">
+			<span class="gp"><b><i>g(x)</i> =</b> </span>
+			<br>
+			<br>
+			<span class="gb"><b><i>g</i> =</b> </span>
+			<br>
+			<br>
+			<span class="ap"><b><i>a(x)</i> =</b> </span>
+			<br>
+			<br>
+			<span class="ab"><b><i>a</i> =</b> </span>
+			<br>
+			<br>
+			<span class="ank"><b><i>a(x)⋅x<sup>n-k</sup></i> =</b> </span>
+		</div>
+		<br>
+		<br>
+		<div id="division" class="division empty">
+			<b>Произведем деление <i>a(x)<sup>n-k</sup></i> на <i>g(x)</i></b>:
+			<br>
+			<br>
+			<div id="division_math">
+				<table>
+					<tr>
+						<td id="dividend"></td>
+						<td id="divider"></td>
+					</tr>
+					<tr>
+						<td class="product"></td>
+						<td id="quotient"></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		<br>
+		<br>
+		<div id="output" class="empty">
+			<span class="rp"><b><i>r(x)</i> = </b></span>
+			<br>
+			<br>
+			<span class="vp"><b><i>V(x)</i> = </b></span>
+			<br>
+			<br>
+			<span class="vb"><b><i>V</i> = </b></span>
+		</div>
+	</div>
+</body>
+</html>
