@@ -9,23 +9,23 @@ table td{
 table{
 	border-collapse: collapse;
 }
-#division_math{
+.division_math{
 	border: 1px solid black;
 	display: inline-block;
 	padding: 4ex;
 }
-#division:not(.empty){
+.division:not(.empty){
 	display: inline-block;
 	text-align: center;
 }
-table td#dividend{
+table td.dividend{
 	border-right: 3px solid black;
 }
-table td#divider{
+table td.divider{
 	border-left: 3px solid black;
 	border-bottom: 3px solid black;
 }
-table td#quotient{
+table td.quotient{
 	border-left: 3px solid black;
 	border-top: 3px solid black;
 }
@@ -41,7 +41,7 @@ table td.product:before{
 div.empty{
 	display: none;
 }
-#input b,#output b{
+.input b,.output b{
 	display: inline-block;
 	text-align: right;
 	padding-right: 1ex;

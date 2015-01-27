@@ -1,7 +1,96 @@
 function onlyUnique(value, index, self) {
     return self.indexOf(value) === index;
 }
+function dividePoly(dividendObj, dividerObj, divisionID, outputID){
+	if(divisionID){
+		$("#"+divisionID+" .dividend").html(dividendObj.PolyString.replace(/x(\d+)/g,'x<sup>$1</sup>'));
+		$("#"+divisionID+" .divider").html(dividerObj.PolyString.replace(/x(\d+)/g,'x<sup>$1</sup>'));
+	}
 
+	var dividend = dividendObj.PolyArray.slice(0);
+	var divider = dividerObj.PolyArray.slice(0);
+	var left = dividend[0];
+	var right = divider[0];
+	if(dividend[0] < divider[0]){
+		var residualText = dividend.join("</sup>+x<sup>");
+		residualText = "x<sup>" + residualText + "</sup>";
+		residualText = residualText.replace(/(<sup>1<\/sup>)/g, "");
+		residualText = residualText.replace(/(x<sup>0<\/sup>)$/g, "1");
+
+		$("#"+divisionID+" .product").last().html(productText);
+		$("#"+divisionID+" table tr").last().after('<tr><td class="residual"></td></tr>');
+		$("#"+divisionID+" .residual").last().html(residualText);
+	}
+	while(dividend[0] >= divider[0]){
+			left = dividend[0];
+			right = divider[0];
+			var quotient = (left-right);
+			if(divisionID){
+				var quotientText = $("#"+divisionID+" .quotient").html();
+				switch(quotient){
+					case 0:
+						quotientText += '1+';
+						break;
+					case 1:
+						quotientText += 'x+';
+						break;
+					default:
+						quotientText += 'x<sup>'+quotient+'</sup>+';
+						break;
+				}
+				$("#"+divisionID+" .quotient").html(quotientText);
+			}
+
+			var productText = '';
+			for(var i = 0; i <= divider.length - 1; i++){
+				var product = quotient+divider[i];
+				switch(product){
+					case 0:
+						productText += '1+';
+						break;
+					case 1:
+						productText += 'x+';
+						break;
+					default:
+						productText += 'x<sup>'+(product)+'</sup>+';
+						break;
+				}
+				var pos = dividend.indexOf(product);
+				if(pos >= 0){
+					dividend.splice(pos, 1);
+				}else{
+					dividend.unshift(product);
+				}
+			}
+			dividend.sort(function(a,b){
+				if(a < b){
+					return 1;
+				}
+				if(a > b){
+					return -1;
+				}
+				return 0;
+			});
+			productText = productText.slice(0, -1);
+
+			var residualText = dividend.join("</sup>+x<sup>");
+			residualText = "x<sup>" + residualText + "</sup>";
+			residualText = residualText.replace(/(<sup>1<\/sup>)/g, "");
+			residualText = residualText.replace(/(x<sup>0<\/sup>)$/g, "1");
+
+			$("#"+divisionID+" .product").last().html(productText);
+			$("#"+divisionID+" table tr").last().after('<tr><td class="residual"></td></tr>');
+			$("#"+divisionID+" .residual").last().html(residualText);
+			if(dividend[0] >= divider[0]){
+				$("#"+divisionID+" table tr").last().after('<tr><td class="product"></td></tr>');
+			}
+		}
+		var qFinalText = $("#"+divisionID+" .quotient").html();
+		$("#"+divisionID+" .quotient").html(qFinalText.slice(0,-1));
+		$("#"+divisionID).removeClass("empty");
+		var Rx = $("#"+divisionID+" .residual").last().text();
+		return Rx;
+}
 function parser(string, type, n, k, len){
 	len = len || ((n-k)+1);
 	var key = string;
@@ -35,6 +124,7 @@ function parser(string, type, n, k, len){
 		});
 		PolyString = splitted.join("+");
 		PolyString = PolyString.replace(/[XхХx]/ig, "x");
+		PolyString = PolyString.replace(/(x0)$/, "1");
 		result.PolyString = PolyString;
 
 		PolyArray = [];
@@ -43,7 +133,7 @@ function parser(string, type, n, k, len){
 		for (var i = BinaryArray.length - 1; i >= 0; i--) {
 			switch(i){
 				case 0:
-					regex = '([^x]|^)1$';
+					regex = '((([^x]|^)1)|(x0))$';
 					break;
 				case 1:
 					regex = '(([^0-9]|^)1?x([^0-9]|$))|(x1?([^0-9]|$))';
@@ -93,7 +183,8 @@ function parser(string, type, n, k, len){
 			}
 		};
 		PolyString = PolyString.slice(0, -1);
-		return parser(PolyString, 'poly', n, k, k);
+		len = k;
+		return parser(PolyString, 'poly', n, k, len);
 	}
 }
 
@@ -118,93 +209,45 @@ $(document).ready(function(){
 			Ax += 'x' + (A.PolyArray[i]+m) + "+";
 		};
 		Ax = Ax.slice(0, -1);
+
 		var AxNK = parser(Ax, 'poly', n, k, n);
 
 		$("#input .ank").append(AxNK.PolyString.replace(/x(\d+)/g,'x<sup>$1</sup>'));
 		$("#input").removeClass("empty");
+
 		// Делим AxNK на Gx
-		$("#dividend").html(AxNK.PolyString.replace(/x(\d+)/g,'x<sup>$1</sup>'));
-		$("#divider").html(G.PolyString.replace(/x(\d+)/g,'x<sup>$1</sup>'));
-
-		var dividend = AxNK.PolyArray.slice(0);
-		var divider = G.PolyArray.slice(0);
-		var left = dividend[0];
-		var right = divider[0];
-		var counter = 1;
-		while(dividend[0] >= divider[0]){
-			left = dividend[0];
-			right = divider[0];
-
-			var quotient = (left-right);
-			var quotientText = $("#quotient").html();
-			switch(quotient){
-				case 0:
-					quotientText += '1+';
-					break;
-				case 1:
-					quotientText += 'x+';
-					break;
-				default:
-					quotientText += 'x<sup>'+quotient+'</sup>+';
-					break;
-			}
-			$("#quotient").html(quotientText);
-
-			var productText = '';
-			for(var i = 0; i <= divider.length - 1; i++){
-				var product = quotient+divider[i];
-				switch(product){
-					case 0:
-						productText += '1+';
-						break;
-					case 1:
-						productText += 'x+';
-						break;
-					default:
-						productText += 'x<sup>'+(product)+'</sup>+';
-						break;
-				}
-				var pos = dividend.indexOf(product);
-				if(pos >= 0){
-					dividend.splice(pos, 1);
-				}else{
-					dividend.unshift(product);
-				}
-			}
-			dividend.sort(function(a,b){
-				if(a < b){
-					return 1;
-				}
-				if(a > b){
-					return -1;
-				}
-				return 0;
-			});
-			productText = productText.slice(0, -1);
-
-			var residualText = dividend.join("</sup>+x<sup>");
-			residualText = "x<sup>" + residualText + "</sup>";
-			residualText = residualText.replace(/(<sup>1<\/sup>)/g, "");
-			residualText = residualText.replace(/(x<sup>0<\/sup>)$/g, "1");
-
-			$("#division .product").last().html(productText);
-			$("#division table tr").last().after('<tr><td class="residual"></td></tr>');
-			$("#division .residual").last().html(residualText);
-			if(dividend[0] >= divider[0]){
-				$("#division table tr").last().after('<tr><td class="product"></td></tr>');
-			}
-		}
-		$("#quotient").html($("#quotient").html().slice(0,-1));
-
-		var Rx = $("#division .residual").last().text();
+		var Rx = dividePoly(AxNK, G, "division");
 		var Vx = AxNK.PolyString.concat("+", Rx);
 		var V = parser(Vx, 'poly', n, k, n);
 
 		$("#output .rp").append(Rx.replace(/x(\d+)/g,'x<sup>$1</sup>'));
 		$("#output .vp").append(V.PolyString.replace(/x(\d+)/g,'x<sup>$1</sup>'));
 		$("#output .vb").append(V.BinaryString);
-
 		$("#output").removeClass("empty");
-		$("#division").removeClass("empty");
+
+		var th = $("#th").val();
+
+		var nth = V.BinaryString[V.BinaryString.length-th];
+		var nth = (nth == "1")?"0":"1";
+
+		var S1 = parser("x"+(th-1), 'poly', n, k, n);
+
+		S1 = dividePoly(S1, G, "division_s");
+		S1 = parser(S1, "poly", n, k, n-k);
+
+		var Vs = V.BinaryString.slice(0, -th) + nth + V.BinaryString.slice(-(th-1));
+
+		Vs = parser(Vs, "binary", n, n, n);
+		$("#output_s .V").append(V.BinaryString);
+		$("#output_s .Vs").append(Vs.BinaryString);
+		$("#output_s .S").append(S1.BinaryString);
+		$("#output_s").removeClass("empty");
+
+		var S2 = parser(dividePoly(Vs, G, "division_decode"), "poly", n, k, n-k);
+
+		$("#output_decode .r").append(S2.PolyString);
+		$("#output_decode .Sx").append(S2.BinaryString);
+		$("#output_decode .S").append(S1.BinaryString);
+		$("#output_decode").removeClass("empty");
 	});
 });
