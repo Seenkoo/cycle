@@ -220,6 +220,14 @@ $(document).ready(function(){
 		var Vx = AxNK.PolyString.concat("+", Rx);
 		var V = parser(Vx, 'poly', n, k, n);
 
+		$.post("coder.php", { word: A.BinaryString }, function(data, status){
+			if(status == "success" && data != ""){
+				if(V.BinaryString != data){
+					alert(data);
+				}
+				console.log(data);
+			}
+		});
 		$("#output .rp").append(Rx.replace(/x(\d+)/g,'x<sup>$1</sup>'));
 		$("#output .vp").append(V.PolyString.replace(/x(\d+)/g,'x<sup>$1</sup>'));
 		$("#output .vb").append(V.BinaryString);
@@ -235,7 +243,7 @@ $(document).ready(function(){
 		S1 = dividePoly(S1, G, "division_s");
 		S1 = parser(S1, "poly", n, k, n-k);
 
-		var Vs = V.BinaryString.slice(0, -th) + nth + V.BinaryString.slice(-(th-1));
+		var Vs = V.BinaryString.slice(0, -th) + nth + ((th > 1) ? (V.BinaryString.slice(-(th-1))) : "");
 
 		Vs = parser(Vs, "binary", n, n, n);
 		$("#output_s .V").append(V.BinaryString);
